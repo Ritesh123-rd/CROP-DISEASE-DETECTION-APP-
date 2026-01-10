@@ -174,6 +174,9 @@ def api_analyze():
         
         # Prepare image for Gemini
         img = PIL.Image.open(io.BytesIO(image_bytes))
+        
+        # Optimize image size (Resize if larger than 1024x1024 to prevent OOM/Timeouts)
+        img.thumbnail((1024, 1024))
 
         # Prompt for analysis
         prompt = """

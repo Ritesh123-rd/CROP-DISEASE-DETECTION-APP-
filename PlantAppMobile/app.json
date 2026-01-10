@@ -19,10 +19,6 @@
     },
     "android": {
       "package": "com.plantapp.mobile",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "permissions": [
         "INTERNET"
       ],

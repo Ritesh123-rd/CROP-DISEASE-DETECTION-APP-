@@ -144,6 +144,19 @@
                     body: formData
                 });
                 
+                // Check for non-JSON response (e.g., HTML error page or login redirect)
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    // If login page detected (redirect)
+                    if (text.includes("Login") || text.includes("Sign In")) {
+                         alert("Session expired. Please log in again.");
+                         window.location.href = "/login";
+                         return;
+                    }
+                    throw new Error(`Server Error (${response.status}): Response was not JSON. May be a timeout or server crash.`);
+                }
+
                 const data = await response.json();
 
                 if (data.success) {
@@ -198,7 +211,7 @@
                 }
             } catch (error) {
                 console.error('Analysis error:', error);
-                alert('Network error. Please try again.');
+                alert('Analysis Failed: ' + error.message);
                 btn.innerHTML = `
                     <i class="material-icons">search</i>
                     Start AI Analysis
