@@ -112,6 +112,11 @@
         function handleImageSelect(event) {
             const file = event.target.files[0];
             if (file) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert("Image/Video is too large (over 10MB). Please choose a smaller file.");
+                    return;
+                }
+                
                 selectedFile = file;
                 const imageUrl = URL.createObjectURL(file);
                 document.getElementById('imagePreview').innerHTML = `<img src="${imageUrl}" alt="Selected plant">`;
@@ -138,23 +143,35 @@
                 const formData = new FormData();
                 formData.append('image', selectedFile);
 
-                // Call API
+                const startTime = Date.now();
+                // Call API with timeout signal
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
                 
+                clearTimeout(timeoutId);
+
                 // Check for non-JSON response (e.g., HTML error page or login redirect)
                 const contentType = response.headers.get("content-type");
+                
+                if (!response.ok) {
+                     const text = await response.text();
+                     throw new Error(`Server returned ${response.status}: ${text.substring(0, 100)}`);
+                }
+
                 if (!contentType || !contentType.includes("application/json")) {
                     const text = await response.text();
-                    // If login page detected (redirect)
                     if (text.includes("Login") || text.includes("Sign In")) {
                          alert("Session expired. Please log in again.");
                          window.location.href = "/login";
                          return;
                     }
-                    throw new Error(`Server Error (${response.status}): Response was not JSON. May be a timeout or server crash.`);
+                    throw new Error(`Response was not JSON (Status ${response.status}). Content: ${text.substring(0, 50)}...`);
                 }
 
                 const data = await response.json();
@@ -181,20 +198,20 @@
                     }
                     
                     // Show health analysis if available
-                    if (data.healthAnalysis) {
-                        const healthScore = data.healthAnalysis.health_score;
-                        const healthSection = document.getElementById('healthAnalysis');
-                        if (healthSection) {
+                    const healthSection = document.getElementById('healthAnalysis');
+                    if (data.healthAnalysis || data.health_score) {
+                         const score = data.health_score || (data.healthAnalysis ? data.healthAnalysis.health_score : 0);
+                         if(healthSection) {
                             healthSection.innerHTML = `
                                 <div class="result-row">
-                                    <i class="material-icons" style="color: ${healthScore > 70 ? '#4CAF50' : healthScore > 40 ? '#FF9800' : '#F44336'};">favorite</i>
+                                    <i class="material-icons" style="color: ${score > 70 ? '#4CAF50' : score > 40 ? '#FF9800' : '#F44336'};">favorite</i>
                                     <div>
                                         <p class="result-label">Health Score</p>
-                                        <p class="result-value">${healthScore}%</p>
+                                        <p class="result-value">${score}%</p>
                                     </div>
                                 </div>
                             `;
-                        }
+                         }
                     }
                     
                     // Show results
@@ -202,7 +219,7 @@
                     document.getElementById('analyzeBtn').classList.add('hidden');
                     document.getElementById('resultsCard').classList.remove('hidden');
                 } else {
-                    alert('Error: ' + (data.error || 'Analysis failed'));
+                    alert('Server Error: ' + (data.error || 'Analysis failed'));
                     btn.innerHTML = `
                         <i class="material-icons">search</i>
                         Start AI Analysis
@@ -211,7 +228,16 @@
                 }
             } catch (error) {
                 console.error('Analysis error:', error);
-                alert('Analysis Failed: ' + error.message);
+                
+                let errorMsg = error.message;
+                if (error.name === 'AbortError') {
+                    errorMsg = "Request timeout. Server took too long to respond.";
+                } else if (error.message.includes("Failed to fetch")) {
+                    errorMsg = "Network connection failed. Please check your internet.";
+                }
+                
+                alert('DEBUG ERROR (' + (new Date()).toLocaleTimeString() + '): ' + errorMsg);
+                
                 btn.innerHTML = `
                     <i class="material-icons">search</i>
                     Start AI Analysis
@@ -237,5 +263,6 @@
             document.getElementById('resultsCard').classList.add('hidden');
         }
     </script>
+    <div style="text-align: center; color: #ccc; font-size: 10px; margin-top: 20px;">v1.1 Debug</div>
 </body>
 </html>
