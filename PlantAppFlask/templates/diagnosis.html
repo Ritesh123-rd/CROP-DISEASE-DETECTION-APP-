@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantCare AI - Diagnosis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="header-btn" onclick="window.location.href='/home'">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h1 class="header-title">Plant Diagnosis</h1>
+            <button class="header-btn" onclick="window.location.href='/history'">
+                <i class="material-icons">history</i>
+            </button>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="image-preview animate-fade-in" id="imagePreview">
+            <i class="material-icons">add_photo_alternate</i>
+            <p>Select or capture a plant image</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="actionButtons">
+            <button class="action-card" onclick="takePhoto()">
+                <div class="action-icon">
+                    <i class="material-icons">camera_alt</i>
+                </div>
+                <span class="action-title">Take Photo</span>
+            </button>
+            <button class="action-card" onclick="uploadFromGallery()">
+                <div class="action-icon">
+                    <i class="material-icons">photo_library</i>
+                </div>
+                <span class="action-title">Upload from Gallery</span>
+            </button>
+        </div>
+
+        <!-- Analyze Button -->
+        <button class="btn btn-primary btn-full" id="analyzeBtn" onclick="startAnalysis()">
+            <i class="material-icons">search</i>
+            Start AI Analysis
+        </button>
+
+        <!-- Results (hidden initially) -->
+        <div class="results-card hidden" id="resultsCard">
+            <h2 class="results-title">Diagnosis Results</h2>
+            
+            <div class="result-row">
+                <i class="material-icons" style="color:var(--dark-green);">local_florist</i>
+                <div>
+                    <p class="result-label">Plant Name</p>
+                    <p class="result-value" id="plantName">Tomato Leaf</p>
+                </div>
+            </div>
+            
+            <div class="result-row">
+                <i class="material-icons orange">warning</i>
+                <div>
+                    <p class="result-label">Disease Detected</p>
+                    <p class="result-value" id="diseaseName">Early Blight</p>
+                </div>
+            </div>
+            
+            <div class="result-row">
+                <i class="material-icons green">check_circle</i>
+                <div>
+                    <p class="result-label">Confidence</p>
+                    <p class="result-value" id="confidence">95%</p>
+                </div>
+            </div>
+            
+            <div class="treatment-card">
+                <h3 class="treatment-title">Recommended Treatment</h3>
+                <p class="treatment-text" id="treatment">Apply fungicide and remove affected leaves</p>
+            </div>
+            
+            <a href="/chat" class="btn btn-primary btn-full mb-20">
+                <i class="material-icons">chat</i>
+                Chat with Plant Doctor
+            </a>
+            
+            <button class="btn btn-outline btn-full" onclick="resetDiagnosis()">
+                <i class="material-icons">refresh</i>
+                Diagnose Another Plant
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        function takePhoto() {
+            const input = document.getElementById('fileInput');
+            input.setAttribute('capture', 'environment');
+            input.click();
+        }
+
+        function uploadFromGallery() {
+            const input = document.getElementById('fileInput');
+            input.removeAttribute('capture');
+            input.click();
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const imageUrl = URL.createObjectURL(file);
+                document.getElementById('imagePreview').innerHTML = `<img src="${imageUrl}" alt="Selected plant">`;
+            }
+        }
+
+        async function startAnalysis() {
+            const btn = document.getElementById('analyzeBtn');
+            
+            if (!selectedFile) {
+                alert('Please select or capture an image first!');
+                return;
+            }
+            
+            // Show loading state
+            btn.innerHTML = `
+                <i class="material-icons">hourglass_empty</i>
+                Analyzing plant...
+            `;
+            btn.disabled = true;
+
+            try {
+                // Create form data with image
+                const formData = new FormData();
+                formData.append('image', selectedFile);
+
+                // Call API
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update results
+                    document.getElementById('plantName').textContent = data.plantName || 'Unknown';
+                    document.getElementById('diseaseName').textContent = data.disease || 'Unknown';
+                    document.getElementById('confidence').textContent = data.confidence || '0%';
+                    document.getElementById('treatment').textContent = data.treatment || 'No treatment info available';
+                    
+                    // Update disease icon color based on health
+                    const diseaseIcon = document.querySelector('#resultsCard .result-row:nth-child(2) i');
+                    if (data.disease === 'Healthy') {
+                        diseaseIcon.className = 'material-icons green';
+                        diseaseIcon.textContent = 'check_circle';
+                    } else if (data.isUnknown) {
+                        diseaseIcon.className = 'material-icons';
+                        diseaseIcon.style.color = '#9E9E9E';
+                        diseaseIcon.textContent = 'help_outline';
+                    } else {
+                        diseaseIcon.className = 'material-icons orange';
+                        diseaseIcon.textContent = 'warning';
+                    }
+                    
+                    // Show health analysis if available
+                    if (data.healthAnalysis) {
+                        const healthScore = data.healthAnalysis.health_score;
+                        const healthSection = document.getElementById('healthAnalysis');
+                        if (healthSection) {
+                            healthSection.innerHTML = `
+                                <div class="result-row">
+                                    <i class="material-icons" style="color: ${healthScore > 70 ? '#4CAF50' : healthScore > 40 ? '#FF9800' : '#F44336'};">favorite</i>
+                                    <div>
+                                        <p class="result-label">Health Score</p>
+                                        <p class="result-value">${healthScore}%</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Show results
+                    document.getElementById('actionButtons').classList.add('hidden');
+                    document.getElementById('analyzeBtn').classList.add('hidden');
+                    document.getElementById('resultsCard').classList.remove('hidden');
+                } else {
+                    alert('Error: ' + (data.error || 'Analysis failed'));
+                    btn.innerHTML = `
+                        <i class="material-icons">search</i>
+                        Start AI Analysis
+                    `;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Analysis error:', error);
+                alert('Network error. Please try again.');
+                btn.innerHTML = `
+                    <i class="material-icons">search</i>
+                    Start AI Analysis
+                `;
+                btn.disabled = false;
+            }
+        }
+
+        function resetDiagnosis() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('imagePreview').innerHTML = `
+                <i class="material-icons">add_photo_alternate</i>
+                <p>Select or capture a plant image</p>
+            `;
+            document.getElementById('actionButtons').classList.remove('hidden');
+            document.getElementById('analyzeBtn').classList.remove('hidden');
+            document.getElementById('analyzeBtn').innerHTML = `
+                <i class="material-icons">search</i>
+                Start AI Analysis
+            `;
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('resultsCard').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

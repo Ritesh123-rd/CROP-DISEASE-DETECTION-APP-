@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantCare AI - Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="header-btn" onclick="window.location.href='/home'">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h1 class="header-title">Plant Doctor</h1>
+            <div style="width:40px;"></div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container animate-fade-in">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Bot Message -->
+                <div class="message bot">
+                    <div class="bot-icon">
+                        <i class="material-icons">eco</i>
+                    </div>
+                    <div class="message-bubble">
+                        Hello! I am your Plant Doctor AI. How can I help you with your plants today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your question..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">
+                    <i class="material-icons">send</i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const responses = [
+            "Based on my analysis, I recommend checking the soil moisture and ensuring proper sunlight exposure for your plant.",
+            "That sounds like it could be a nutrient deficiency. Try adding some organic fertilizer and see if the condition improves.",
+            "Yellowing leaves often indicate overwatering. Let the soil dry out between waterings and ensure proper drainage.",
+            "This appears to be a fungal infection. Apply a copper-based fungicide and remove affected leaves to prevent spreading.",
+            "Great question! Most indoor plants thrive in indirect sunlight and moderate watering. Water when the top inch of soil feels dry.",
+            "For best results, repot your plant every 1-2 years with fresh potting mix to provide new nutrients."
+        ];
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Simulate bot response
+            setTimeout(() => {
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'bot');
+            }, 1000);
+        }
+
+        function addMessage(text, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            if (type === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="bot-icon">
+                        <i class="material-icons">eco</i>
+                    </div>
+                    <div class="message-bubble">${text}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">${text}</div>
+                `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantCare AI - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="logo-container animate-fade-in">
+            <div class="logo-circle logo-large">
+                <i class="material-icons">eco</i>
+            </div>
+            <h1 class="app-name">PlantCare AI</h1>
+            <p class="tagline">Your Smart Plant Health Companion</p>
+            
+            <div class="card mt-20" style="width:100%;">
+                <p style="text-align:center; line-height:1.6; color:var(--black);">
+                    Instantly detect plant diseases and get expert remedies using advanced AI technology. Keep your plants healthy and thriving!
+                </p>
+            </div>
+            
+            <!-- Logout Button -->
+            <button onclick="handleLogout()" class="btn btn-outline" style="margin-top: 15px; padding: 10px 25px; border-radius: 25px;">
+                <i class="material-icons" style="font-size: 18px;">logout</i>
+                Logout
+            </button>
+        </div>
+
+        <!-- Get Started Button -->
+        <div style="text-align:center; margin: 30px 0;">
+            <a href="/diagnosis" class="btn btn-white" style="padding: 18px 40px; border-radius: 30px;">
+                Get Started
+                <i class="material-icons">eco</i>
+            </a>
+        </div>
+
+        <!-- Key Features -->
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid animate-fade-in">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="material-icons">camera_alt</i>
+                </div>
+                <h3 class="feature-title">Quick Scan</h3>
+                <p class="feature-desc">Capture or upload leaf images for instant analysis and Detection.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="material-icons">eco</i>
+                </div>
+                <h3 class="feature-title">AI Detection</h3>
+                <p class="feature-desc">Advanced AI identifies diseases with 95% accuracy</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="material-icons">healing</i>
+                </div>
+                <h3 class="feature-title">Smart Remedies</h3>
+                <p class="feature-desc">AI-powered treatment suggestions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="material-icons">trending_up</i>
+                </div>
+                <h3 class="feature-title">Track Progress</h3>
+                <p class="feature-desc">Monitor plant recovery</p>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="steps-card animate-fade-in">
+            <h2 class="steps-title">How It Works</h2>
+            
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <i class="material-icons">camera_alt</i>
+                        <span class="step-title">Step 1</span>
+                    </div>
+                    <p class="step-desc">Take a photo of your plant</p>
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <i class="material-icons">speed</i>
+                        <span class="step-title">Step 2</span>
+                    </div>
+                    <p class="step-desc">Our AI analyzes the disease</p>
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <i class="material-icons">eco</i>
+                        <span class="step-title">Step 3</span>
+                    </div>
+                    <p class="step-desc">Get expert recommendations</p>
+                </div>
+            </div>
+            
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <i class="material-icons">trending_up</i>
+                        <span class="step-title">Step 4</span>
+                    </div>
+                    <p class="step-desc">Track recovery and improvements</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Choose -->
+        <h2 class="section-title">Why Choose PlantCare AI?</h2>
+        
+        <div class="benefit-card animate-fade-in">
+            <div class="benefit-icon">
+                <i class="material-icons">speed</i>
+            </div>
+            <div class="benefit-content">
+                <h3 class="benefit-title">Quick & Accurate Diagnosis</h3>
+                <p class="benefit-desc">Get quick and precise plant disease identification</p>
+            </div>
+        </div>
+        
+        <div class="benefit-card animate-fade-in">
+            <div class="benefit-icon">
+                <i class="material-icons">eco</i>
+            </div>
+            <div class="benefit-content">
+                <h3 class="benefit-title">Comprehensive Disease Database</h3>
+                <p class="benefit-desc">95%+ accuracy rate</p>
+            </div>
+        </div>
+        
+        <div class="benefit-card animate-fade-in">
+            <div class="benefit-icon">
+                <i class="material-icons">nature</i>
+            </div>
+            <div class="benefit-content">
+                <h3 class="benefit-title">Eco-Friendly</h3>
+                <p class="benefit-desc">Reduce chemical usage</p>
+            </div>
+        </div>
+        
+        <div class="benefit-card animate-fade-in">
+            <div class="benefit-icon">
+                <i class="material-icons">savings</i>
+            </div>
+            <div class="benefit-content">
+                <h3 class="benefit-title">Save Money</h3>
+                <p class="benefit-desc">Prevent crop losses</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="/diagnosis" class="nav-item">
+                <i class="material-icons">camera_alt</i>
+                <span>Scan</span>
+            </a>
+            <a href="/chat" class="nav-item">
+                <i class="material-icons">chat</i>
+                <span>Chat</span>
+            </a>
+            <a href="/history" class="nav-item">
+                <i class="material-icons">history</i>
+                <span>History</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/login';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantCare AI - History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="header-btn" onclick="window.location.href='/home'">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h1 class="header-title">History</h1>
+            <div style="width:40px;"></div>
+        </div>
+
+        <!-- History Container -->
+        <div class="history-container animate-fade-in">
+            <!-- History Item 1 -->
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-icon">
+                        <i class="material-icons">local_florist</i>
+                    </div>
+                    <div class="history-info">
+                        <h3 class="history-plant">Tomato Leaf</h3>
+                        <div class="history-disease">
+                            <i class="material-icons">warning</i>
+                            <span>Early Blight</span>
+                        </div>
+                    </div>
+                    <span class="confidence-badge">95%</span>
+                </div>
+                <div class="history-footer">
+                    <div class="history-date">
+                        <i class="material-icons">calendar_today</i>
+                        <span>2026-01-09</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="material-icons">access_time</i>
+                        <span>10:30 AM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Item 2 -->
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-icon">
+                        <i class="material-icons">local_florist</i>
+                    </div>
+                    <div class="history-info">
+                        <h3 class="history-plant">Rose Leaf</h3>
+                        <div class="history-disease">
+                            <i class="material-icons">warning</i>
+                            <span>Black Spot</span>
+                        </div>
+                    </div>
+                    <span class="confidence-badge">92%</span>
+                </div>
+                <div class="history-footer">
+                    <div class="history-date">
+                        <i class="material-icons">calendar_today</i>
+                        <span>2026-01-08</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="material-icons">access_time</i>
+                        <span>02:15 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Item 3 -->
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-icon">
+                        <i class="material-icons">local_florist</i>
+                    </div>
+                    <div class="history-info">
+                        <h3 class="history-plant">Apple Leaf</h3>
+                        <div class="history-disease">
+                            <i class="material-icons">warning</i>
+                            <span>Apple Scab</span>
+                        </div>
+                    </div>
+                    <span class="confidence-badge">88%</span>
+                </div>
+                <div class="history-footer">
+                    <div class="history-date">
+                        <i class="material-icons">calendar_today</i>
+                        <span>2026-01-07</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="material-icons">access_time</i>
+                        <span>09:45 AM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Item 4 -->
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-icon">
+                        <i class="material-icons">local_florist</i>
+                    </div>
+                    <div class="history-info">
+                        <h3 class="history-plant">Potato Leaf</h3>
+                        <div class="history-disease">
+                            <i class="material-icons">warning</i>
+                            <span>Late Blight</span>
+                        </div>
+                    </div>
+                    <span class="confidence-badge">97%</span>
+                </div>
+                <div class="history-footer">
+                    <div class="history-date">
+                        <i class="material-icons">calendar_today</i>
+                        <span>2026-01-06</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="material-icons">access_time</i>
+                        <span>04:20 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Item 5 -->
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-icon">
+                        <i class="material-icons">local_florist</i>
+                    </div>
+                    <div class="history-info">
+                        <h3 class="history-plant">Grape Leaf</h3>
+                        <div class="history-disease">
+                            <i class="material-icons">warning</i>
+                            <span>Powdery Mildew</span>
+                        </div>
+                    </div>
+                    <span class="confidence-badge">91%</span>
+                </div>
+                <div class="history-footer">
+                    <div class="history-date">
+                        <i class="material-icons">calendar_today</i>
+                        <span>2026-01-05</span>
+                    </div>
+                    <div class="history-date">
+                        <i class="material-icons">access_time</i>
+                        <span>11:00 AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

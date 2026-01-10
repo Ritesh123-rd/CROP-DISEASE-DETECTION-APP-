@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantCare AI - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .message { padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .message.success { background: #c8e6c9; color: #2e7d32; }
+        .message.error { background: #ffcdd2; color: #c62828; }
+        .loading { opacity: 0.6; pointer-events: none; }
+        .forgot-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 15px; 
+            color: #2E7D32; 
+            text-decoration: none; 
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <div class="header">
+            <button class="header-btn" onclick="history.back()">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo-circle">
+                <i class="material-icons">eco</i>
+            </div>
+        </div>
+
+        <!-- Title -->
+        <h1 class="title" id="pageTitle">Welcome Back!</h1>
+        <p class="subtitle" id="pageSubtitle">Sign in to continue your plant care journey</p>
+
+        <!-- Card -->
+        <div class="card animate-fade-in">
+            <!-- Message Area -->
+            <div id="messageArea"></div>
+
+            <!-- Toggle -->
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="loginTab" onclick="switchToLogin()">Login</button>
+                <button class="toggle-btn" id="signupTab" onclick="switchToSignup()">Sign Up</button>
+            </div>
+
+            <!-- Signup Fields (hidden by default) -->
+            <div id="signupFields" class="hidden">
+                <div class="input-group">
+                    <i class="material-icons">person</i>
+                    <input type="text" placeholder="Full Name" id="name">
+                </div>
+                <div class="input-group">
+                    <i class="material-icons">phone</i>
+                    <input type="tel" placeholder="Contact Number" id="phone">
+                </div>
+                <div class="input-group">
+                    <i class="material-icons">calendar_today</i>
+                    <input type="date" placeholder="Date of Birth" id="dob">
+                </div>
+                <div class="input-group">
+                    <i class="material-icons">wc</i>
+                    <select id="gender" style="flex:1; padding:15px 0; border:none; background:transparent; font-size:16px; outline:none;">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Common Fields -->
+            <div class="input-group">
+                <i class="material-icons">email</i>
+                <input type="email" placeholder="Email Address" id="email">
+            </div>
+            <div class="input-group">
+                <i class="material-icons">lock</i>
+                <input type="password" placeholder="Password" id="password">
+            </div>
+
+            <!-- Submit Button -->
+            <button class="btn btn-secondary btn-full mt-20" id="submitBtn" onclick="handleSubmit()">
+                Sign In
+            </button>
+
+            <!-- Forgot Password Link (only visible in login mode) -->
+            <a href="/forgot-password" id="forgotLink" class="forgot-link">Forgot Password?</a>
+        </div>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        function showMessage(text, type) {
+            const area = document.getElementById('messageArea');
+            area.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => area.innerHTML = '', 5000);
+        }
+
+        function switchToLogin() {
+            isLogin = true;
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('signupTab').classList.remove('active');
+            document.getElementById('signupFields').classList.add('hidden');
+            document.getElementById('pageTitle').textContent = 'Welcome Back!';
+            document.getElementById('pageSubtitle').textContent = 'Sign in to continue your plant care journey';
+            document.getElementById('submitBtn').textContent = 'Sign In';
+            document.getElementById('messageArea').innerHTML = '';
+            document.getElementById('forgotLink').style.display = 'block';
+        }
+
+        function switchToSignup() {
+            isLogin = false;
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('signupTab').classList.add('active');
+            document.getElementById('signupFields').classList.remove('hidden');
+            document.getElementById('pageTitle').textContent = 'Create Account';
+            document.getElementById('pageSubtitle').textContent = 'Join PlantCare AI today';
+            document.getElementById('submitBtn').textContent = 'Create Account';
+            document.getElementById('messageArea').innerHTML = '';
+            document.getElementById('forgotLink').style.display = 'none';
+        }
+
+        async function handleSubmit() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showMessage('Please fill in email and password', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.textContent = 'Please wait...';
+
+            try {
+                if (isLogin) {
+                    // Login
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showMessage('Login successful! Redirecting...', 'success');
+                        setTimeout(() => window.location.href = '/home', 1000);
+                    } else {
+                        showMessage(data.error || 'Login failed', 'error');
+                        btn.textContent = 'Sign In';
+                        btn.classList.remove('loading');
+                    }
+                } else {
+                    // Signup
+                    const name = document.getElementById('name').value;
+                    const phone = document.getElementById('phone').value;
+                    const dob = document.getElementById('dob').value;
+                    const gender = document.getElementById('gender').value;
+
+                    if (!name) {
+                        showMessage('Please enter your name', 'error');
+                        btn.textContent = 'Create Account';
+                        btn.classList.remove('loading');
+                        return;
+                    }
+
+                    const response = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password, phone, dob, gender })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showMessage('Account created! Please login.', 'success');
+                        setTimeout(() => switchToLogin(), 1500);
+                    } else {
+                        showMessage(data.error || 'Signup failed', 'error');
+                    }
+                    btn.textContent = 'Create Account';
+                    btn.classList.remove('loading');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                btn.textContent = isLogin ? 'Sign In' : 'Create Account';
+                btn.classList.remove('loading');
+            }
+        }
+    </script>
+</body>
+</html>
