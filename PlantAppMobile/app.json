@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "PlantAppMobile",
+    "slug": "plant-app-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.plantapp.mobile",
+      "permissions": [
+        "INTERNET"
+      ],
+      "usesCleartextTraffic": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a0f95034-aa41-47a5-890f-a3dcf04df8a8"
+      }
+    }
+  }
+}
