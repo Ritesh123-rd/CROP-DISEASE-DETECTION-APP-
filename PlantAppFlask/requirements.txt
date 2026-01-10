@@ -1,7 +1,7 @@
 flask
 flask-cors
 gunicorn
-google-generativeai
+google-generativeai>=0.8.3
 python-dotenv
 Pillow
 numpy
