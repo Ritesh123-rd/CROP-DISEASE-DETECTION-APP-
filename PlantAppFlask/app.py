@@ -170,16 +170,12 @@ def api_analyze():
              return jsonify({"success": False, "error": "Gemini API Key not found"})
 
         genai.configure(api_key=api_key)
-        model_name = 'gemini-1.5-flash'
-        model = genai.GenerativeModel(model_name)
         
         # Prepare image for Gemini
         img = PIL.Image.open(io.BytesIO(image_bytes))
-        
-        # Optimize image size (Resize if larger than 1024x1024 to prevent OOM/Timeouts)
         img.thumbnail((1024, 1024))
 
-        # Prompt for analysis
+        # Prompt
         prompt = """
         Analyze this image of a plant leaf. return a JSON object with the following fields:
         1. plantName: The name of the plant.
@@ -192,20 +188,45 @@ def api_analyze():
         Output ONLY the raw JSON string.
         """
         
-        try:
-            gemini_response = model.generate_content([prompt, img])
-        except Exception as e:
-            print(f"Model generation failed: {e}")
-            # Fallback debug: List available models
+        # List of models to try in order of preference
+        models_to_try = [
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-002',
+            'gemini-1.5-flash-8b',
+            'gemini-2.0-flash-exp',
+            'gemini-1.5-pro',
+            'gemini-1.5-pro-002'
+        ]
+        
+        gemini_response = None
+        last_error = None
+        used_model = None
+
+        print("--- Starting Model Attempt Loop ---")
+        for model_name in models_to_try:
             try:
-                print("Available models:")
+                print(f"Trying model: {model_name}")
+                model = genai.GenerativeModel(model_name)
+                gemini_response = model.generate_content([prompt, img])
+                used_model = model_name
+                print(f"Success with model: {model_name}")
+                break
+            except Exception as e:
+                print(f"Failed with {model_name}: {e}")
+                last_error = e
+                continue
+        
+        if not gemini_response:
+            # If all failed, print available models for debugging
+            try:
+                print("All models failed. Available models:")
                 for m in genai.list_models():
                     if 'generateContent' in m.supported_generation_methods:
                         print(f" - {m.name}")
             except:
                 pass
-            raise e
-        
+            raise last_error or Exception("All models failed")
+
         # Debug Logging
         print("Debugging Gemini Response:")
         try:
@@ -218,7 +239,6 @@ def api_analyze():
             print(f"Raw Text Response: {text_response}")
         except Exception as e:
              print(f"Error accessing .text: {e}")
-             # Check if blocked
              if gemini_response.candidates and gemini_response.candidates[0].finish_reason:
                  return jsonify({"success": False, "error": f"Image blocked due to safety filters ({gemini_response.candidates[0].finish_reason})"})
              return jsonify({"success": False, "error": "No text returned from AI"})
@@ -232,6 +252,7 @@ def api_analyze():
         try:
             result = json.loads(text_response)
             result['success'] = True
+            result['used_model'] = used_model 
         except json.JSONDecodeError as je:
             print(f"JSON Decode Error: {je}")
             return jsonify({"success": False, "error": f"Failed to parse AI response: {str(je)}"})
