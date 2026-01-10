@@ -170,7 +170,8 @@ def api_analyze():
              return jsonify({"success": False, "error": "Gemini API Key not found"})
 
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model_name = 'gemini-1.5-flash'
+        model = genai.GenerativeModel(model_name)
         
         # Prepare image for Gemini
         img = PIL.Image.open(io.BytesIO(image_bytes))
@@ -191,7 +192,19 @@ def api_analyze():
         Output ONLY the raw JSON string.
         """
         
-        gemini_response = model.generate_content([prompt, img])
+        try:
+            gemini_response = model.generate_content([prompt, img])
+        except Exception as e:
+            print(f"Model generation failed: {e}")
+            # Fallback debug: List available models
+            try:
+                print("Available models:")
+                for m in genai.list_models():
+                    if 'generateContent' in m.supported_generation_methods:
+                        print(f" - {m.name}")
+            except:
+                pass
+            raise e
         
         # Debug Logging
         print("Debugging Gemini Response:")
@@ -278,7 +291,7 @@ def api_chat():
         
         if api_key:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             # Plant Expert Persona - Relaxed
             prompt = f"""You are a helpful and knowledgeable Plant Expert AI. 
