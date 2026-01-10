@@ -170,7 +170,7 @@ def api_analyze():
              return jsonify({"success": False, "error": "Gemini API Key not found"})
 
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-3-flash-preview')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         # Prepare image for Gemini
         img = PIL.Image.open(io.BytesIO(image_bytes))
@@ -278,7 +278,7 @@ def api_chat():
         
         if api_key:
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-3-flash-preview')
+            model = genai.GenerativeModel('gemini-1.5-flash')
             
             # Plant Expert Persona - Relaxed
             prompt = f"""You are a helpful and knowledgeable Plant Expert AI. 
