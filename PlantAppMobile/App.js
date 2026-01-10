@@ -12,7 +12,7 @@ import { WebView } from 'react-native-webview';
 //
 // DO NOT use 'localhost' or '127.0.0.1' - that refers to the Phone itself!
 // =========================================================================
-const FLASK_SERVER_URL = 'http://192.168.1.4:5000'; // Replace 192.168.1.4 with your IP
+const FLASK_SERVER_URL = 'https://crop-disease-detection-app-un09.onrender.com';
 
 export default function App() {
     return (
