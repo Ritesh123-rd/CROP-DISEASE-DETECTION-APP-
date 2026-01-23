@@ -186,7 +186,7 @@ def api_analyze():
         1. plantName: The name of the plant.
         2. disease: The name of the disease or "Healthy" if no disease is found.
         3. confidence: A percentage string (e.g., "95%") indicating confidence in the diagnosis.
-        4. treatment: A brief, helpful treatment recommendation if diseased, or a care tip if healthy.
+        4. treatment: A detailed treatment recommendation formatted as a numbered list (e.g., "1. Step one... 2. Step two...").
         5. health_score: A number from 0 to 100 representing the plant's health (100 is perfectly healthy).
         6. isUnknown: Boolean, set to true ONLY if the image is clearly NOT a plant.
         

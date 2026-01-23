@@ -1070,3 +1070,12 @@ body {
     background: var(--gray-100) !important;
     transform: scale(1.1);
 }
+
+/* Mobile Status Bar Fixes */
+.sidebar-btn {
+    top: 50px !important;
+}
+
+.sidebar-header {
+    padding-top: 60px !important;
+}
