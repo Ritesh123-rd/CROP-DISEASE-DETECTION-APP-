@@ -8,12 +8,54 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="material-icons">eco</i>
+            </div>
+            <h2 style="font-size: 20px;">PlantCare AI</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="/home" class="menu-item">
+                <i class="material-icons">home</i>
+                <span>Home</span>
+            </a>
+            <a href="/diagnosis" class="menu-item active">
+                <i class="material-icons">camera_alt</i>
+                <span>AI Diagnosis</span>
+            </a>
+            <a href="/chat" class="menu-item">
+                <i class="material-icons">chat</i>
+                <span>Plant Doctor</span>
+            </a>
+            <a href="/history" class="menu-item">
+                <i class="material-icons">history</i>
+                <span>History</span>
+            </a>
+            <a href="/about" class="menu-item">
+                <i class="material-icons">info</i>
+                <span>About App</span>
+            </a>
+            <div style="border-top: 1px solid var(--gray-100); margin: 10px 0;"></div>
+            <a href="#" onclick="handleLogout()" class="menu-item">
+                <i class="material-icons">logout</i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
     <div class="container">
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-btn" onclick="toggleSidebar()">
+            <i class="material-icons">menu</i>
+        </button>
         <!-- Header -->
         <div class="header">
-            <button class="header-btn" onclick="window.location.href='/home'">
-                <i class="material-icons">arrow_back</i>
-            </button>
+            <div style="width:40px;"></div>
             <h1 class="header-title">Plant Diagnosis</h1>
             <button class="header-btn" onclick="window.location.href='/history'">
                 <i class="material-icons">history</i>
@@ -261,6 +303,20 @@
             `;
             document.getElementById('analyzeBtn').disabled = false;
             document.getElementById('resultsCard').classList.add('hidden');
+        }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/login';
+            }
         }
     </script>
     <div style="text-align: center; color: #ccc; font-size: 10px; margin-top: 20px;">v1.1 Debug</div>
