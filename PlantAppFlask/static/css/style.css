@@ -1053,3 +1053,20 @@ body {
 .sidebar-btn:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+/* Sidebar Toggle Override (Fixed & Black) */
+.sidebar-btn {
+    position: fixed !important;
+    top: 20px;
+    left: 20px;
+    z-index: 900 !important;
+    background: var(--white) !important;
+    color: var(--black) !important;
+    width: 45px !important;
+    height: 45px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+}
+
+.sidebar-btn:hover {
+    background: var(--gray-100) !important;
+    transform: scale(1.1);
+}
