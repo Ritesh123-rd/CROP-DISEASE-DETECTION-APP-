@@ -56,6 +56,7 @@ body {
 .container {
     max-width: 480px;
     margin: 0 auto;
+    margin-top: 38px;
     padding: 20px;
     padding-bottom: 100px;
     min-height: 100vh;
@@ -208,6 +209,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 0 20px;
+    margin-top: 38px;
 }
 
 .header-title {
@@ -487,13 +489,15 @@ body {
     margin-top: 30px;
     box-shadow: var(--shadow-lg);
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 20px;
     right: 20px;
     max-width: 440px;
     margin-left: auto;
     margin-right: auto;
     z-index: 1000;
+    /* Ensure it sits above system nav bar if transparent */
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
 }
 
 .nav-item {
@@ -1053,6 +1057,7 @@ body {
 .sidebar-btn:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+
 /* Sidebar Toggle Override (Fixed & Black) */
 .sidebar-btn {
     position: fixed !important;
@@ -1063,7 +1068,7 @@ body {
     color: var(--black) !important;
     width: 45px !important;
     height: 45px !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .sidebar-btn:hover {
