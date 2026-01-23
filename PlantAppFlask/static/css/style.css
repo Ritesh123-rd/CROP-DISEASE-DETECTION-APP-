@@ -435,6 +435,13 @@ body {
     padding: 15px;
     margin-bottom: 15px;
     box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.clickable-card:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .benefit-icon {

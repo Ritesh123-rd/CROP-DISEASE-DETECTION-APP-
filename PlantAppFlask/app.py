@@ -69,6 +69,11 @@ def chat():
 def history():
     return render_template('history.html')
 
+@app.route('/about')
+@login_required
+def about():
+    return render_template('about.html')
+
 # ===== API Endpoints =====
 
 @app.route('/api/signup', methods=['POST'])
