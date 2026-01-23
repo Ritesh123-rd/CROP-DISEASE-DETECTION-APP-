@@ -1084,3 +1084,15 @@ body {
 .sidebar-header {
     padding-top: 60px !important;
 }
+/* Z-Index Fix: Ensure Sidebar covers Bottom Nav */
+.sidebar {
+    z-index: 2000 !important;
+}
+
+.sidebar-overlay {
+    z-index: 1999 !important;
+}
+
+.sidebar-btn {
+    z-index: 2100 !important;
+}
