@@ -176,9 +176,16 @@ def api_analyze():
 
         genai.configure(api_key=api_key)
         
-        # Prepare image for Gemini
+        # Prepare image for Gemini (optimized for low memory)
         img = PIL.Image.open(io.BytesIO(image_bytes))
-        img.thumbnail((1024, 1024))
+        img = img.convert('RGB')  # Remove alpha channel to reduce memory
+        img.thumbnail((512, 512))  # Smaller size for faster processing
+        
+        # Compress to JPEG in memory to reduce size further
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=85)
+        buffer.seek(0)
+        img = PIL.Image.open(buffer)
 
         # Prompt
         prompt = """
