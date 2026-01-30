@@ -154,6 +154,64 @@ def reset_password(email, new_password):
     
     return {"success": True, "message": "Password reset successfully"}
 
+def update_user(user_id, name=None, phone=None, dob=None, gender=None):
+    """Update user details"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Build query dynamically based on provided fields
+    fields = []
+    values = []
+    
+    if name:
+        fields.append("name = ?")
+        values.append(name)
+    if phone:
+        fields.append("phone = ?")
+        values.append(phone)
+    if dob:
+        fields.append("dob = ?")
+        values.append(dob)
+    if gender:
+        fields.append("gender = ?")
+        values.append(gender)
+        
+    if not fields:
+        conn.close()
+        return {"success": False, "error": "No fields to update"}
+        
+    values.append(user_id)
+    query = f"UPDATE users SET {', '.join(fields)} WHERE id = ?"
+    
+    try:
+        cursor.execute(query, values)
+        conn.commit()
+        conn.close()
+        return {"success": True, "message": "User updated successfully"}
+    except Exception as e:
+        conn.close()
+        return {"success": False, "error": str(e)}
+
+def delete_user(user_id):
+    """Delete user and their related data"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        # Delete related data first (foreign keys)
+        cursor.execute('DELETE FROM diagnosis_history WHERE user_id = ?', (user_id,))
+        cursor.execute('DELETE FROM chat_history WHERE user_id = ?', (user_id,))
+        
+        # Delete user
+        cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+        
+        conn.commit()
+        conn.close()
+        return {"success": True, "message": "User and related data deleted successfully"}
+    except Exception as e:
+        conn.close()
+        return {"success": False, "error": str(e)}
+
 # ===== Diagnosis History Functions =====
 
 def save_diagnosis(user_id, plant_name, disease, confidence, treatment, image_path=None, health_score=None, is_unknown=False):
@@ -222,6 +280,20 @@ def get_diagnosis_stats(user_id=None):
         "diseased_plants": diseased,
         "healthy_plants": total - diseased
     }
+
+def delete_diagnosis(diagnosis_id):
+    """Delete a diagnosis record"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('DELETE FROM diagnosis_history WHERE id = ?', (diagnosis_id,))
+        conn.commit()
+        conn.close()
+        return {"success": True, "message": "Diagnosis record deleted"}
+    except Exception as e:
+        conn.close()
+        return {"success": False, "error": str(e)}
 
 # ===== Chat History Functions =====
 

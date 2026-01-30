@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { useRef, useEffect, useState } from 'react';
 
 // =========================================================================
 // IMPORTANT - REPLACE THIS WITH YOUR COMPUTER'S LOCAL IP ADDRESS
@@ -15,16 +16,39 @@ import { WebView } from 'react-native-webview';
 const FLASK_SERVER_URL = 'https://crop-disease-detection-app-un09.onrender.com';
 
 export default function App() {
+    const webViewRef = useRef(null);
+    const [canGoBack, setCanGoBack] = useState(false);
+
+    useEffect(() => {
+        const onBackPress = () => {
+            if (canGoBack && webViewRef.current) {
+                webViewRef.current.goBack();
+                return true; // Prevent default behavior (exit app)
+            }
+            return false; // Allow default behavior (exit app)
+        };
+
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+        return () => {
+            BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        };
+    }, [canGoBack]);
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto" />
             <WebView
+                ref={webViewRef}
                 source={{ uri: FLASK_SERVER_URL }}
                 style={{ flex: 1 }}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
                 startInLoadingState={true}
                 scalesPageToFit={true}
+                onNavigationStateChange={(navState) => {
+                    setCanGoBack(navState.canGoBack);
+                }}
                 onError={(syntheticEvent) => {
                     const { nativeEvent } = syntheticEvent;
                     console.warn('WebView error: ', nativeEvent);
