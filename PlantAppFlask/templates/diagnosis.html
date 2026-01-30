@@ -119,14 +119,51 @@
                 </div>
             </div>
             
-            <div class="treatment-card" style="background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: 15px; padding: 20px;">
-                <h3 class="treatment-title" style="color: #2e7d32; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                    <i class="material-icons">local_florist</i>
-                    Solutions & Treatment
+            <!-- Precautions Section -->
+            <div class="treatment-section" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <h3 style="color: #e65100; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="material-icons">warning</i>
+                    Precautions to be Followed
                 </h3>
-                <div class="treatment-text" id="treatment" style="color: #33691e; line-height: 1.8; font-size: 14px; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif;">
-                    Apply fungicide and remove affected leaves
+                <ul id="precautionsList" style="color: #bf360c; line-height: 1.8; font-size: 14px; padding-left: 20px; margin: 0;">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+
+            <!-- Tabs for Organic and Inorganic Manures -->
+            <div class="treatment-tabs" style="margin-bottom: 15px;">
+                <div class="tab-buttons" style="display: flex; border-radius: 10px; overflow: hidden; background: #e0e0e0;">
+                    <button id="organicTab" class="tab-btn active" onclick="switchTab('organic')" style="flex: 1; padding: 12px; border: none; background: #4CAF50; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <i class="material-icons" style="font-size: 16px; vertical-align: middle;">eco</i>
+                        Organic Manures
+                    </button>
+                    <button id="inorganicTab" class="tab-btn" onclick="switchTab('inorganic')" style="flex: 1; padding: 12px; border: none; background: #e0e0e0; color: #666; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <i class="material-icons" style="font-size: 16px; vertical-align: middle;">science</i>
+                        Inorganic Manures
+                    </button>
                 </div>
+            </div>
+
+            <!-- Organic Manures Content -->
+            <div id="organicContent" class="tab-content" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 15px; padding: 20px; display: block;">
+                <h4 style="color: #2e7d32; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="material-icons">spa</i>
+                    जैविक खाद (Organic Treatments)
+                </h4>
+                <ul id="organicList" style="color: #1b5e20; line-height: 1.8; font-size: 14px; padding-left: 20px; margin: 0;">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+
+            <!-- Inorganic Manures Content -->
+            <div id="inorganicContent" class="tab-content" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 15px; padding: 20px; display: none;">
+                <h4 style="color: #1565c0; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="material-icons">science</i>
+                    रासायनिक खाद (Chemical Treatments)
+                </h4>
+                <ul id="inorganicList" style="color: #0d47a1; line-height: 1.8; font-size: 14px; padding-left: 20px; margin: 0;">
+                    <li>Loading...</li>
+                </ul>
             </div>
             
             <a href="/chat" class="btn btn-primary btn-full mb-20">
@@ -229,15 +266,44 @@
                     document.getElementById('diseaseName').textContent = data.disease || 'Unknown';
                     document.getElementById('confidence').textContent = data.confidence || '0%';
                     document.getElementById('confidence').textContent = data.confidence || '0%';
-                    // Format treatment text with line breaks if it contains numbered steps
-                    let treatmentText = data.treatment || 'No treatment info available';
-                    treatmentText = treatmentText.replace(/\n/g, '<br>');
-                    // Also ensure numbered lists from string are properly spaced if they don't have newlines
-                    treatmentText = treatmentText.replace(/(\d+\.\s)/g, '<br>$1');
-                    // Remove leading break if exists
-                    if(treatmentText.startsWith('<br>')) treatmentText = treatmentText.substring(4);
-                    
-                    document.getElementById('treatment').innerHTML = treatmentText;
+                    // Populate Precautions
+                    const precautionsList = document.getElementById('precautionsList');
+                    precautionsList.innerHTML = '';
+                    if (data.precautions && data.precautions.length > 0) {
+                        data.precautions.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            precautionsList.appendChild(li);
+                        });
+                    } else {
+                        precautionsList.innerHTML = '<li>No specific precautions recommended.</li>';
+                    }
+
+                    // Populate Organic Manures
+                    const organicList = document.getElementById('organicList');
+                    organicList.innerHTML = '';
+                    if (data.organic_manures && data.organic_manures.length > 0) {
+                        data.organic_manures.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            organicList.appendChild(li);
+                        });
+                    } else {
+                        organicList.innerHTML = '<li>Stay with general organic care.</li>';
+                    }
+
+                    // Populate Inorganic Manures
+                    const inorganicList = document.getElementById('inorganicList');
+                    inorganicList.innerHTML = '';
+                    if (data.inorganic_manures && data.inorganic_manures.length > 0) {
+                        data.inorganic_manures.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            inorganicList.appendChild(li);
+                        });
+                    } else {
+                        inorganicList.innerHTML = '<li>No chemical treatments recommended.</li>';
+                    }
                     
                     // Update disease icon color based on health
                     const diseaseIcon = document.querySelector('#resultsCard .result-row:nth-child(2) i');
@@ -321,6 +387,29 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function switchTab(tab) {
+            const organicBtn = document.getElementById('organicTab');
+            const inorganicBtn = document.getElementById('inorganicTab');
+            const organicContent = document.getElementById('organicContent');
+            const inorganicContent = document.getElementById('inorganicContent');
+
+            if (tab === 'organic') {
+                organicBtn.style.background = '#4CAF50';
+                organicBtn.style.color = 'white';
+                inorganicBtn.style.background = '#e0e0e0';
+                inorganicBtn.style.color = '#666';
+                organicContent.style.display = 'block';
+                inorganicContent.style.display = 'none';
+            } else {
+                inorganicBtn.style.background = '#1565c0';
+                inorganicBtn.style.color = 'white';
+                organicBtn.style.background = '#e0e0e0';
+                organicBtn.style.color = '#666';
+                inorganicContent.style.display = 'block';
+                organicContent.style.display = 'none';
+            }
         }
 
         async function handleLogout() {

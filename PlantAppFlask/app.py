@@ -187,17 +187,21 @@ def api_analyze():
         buffer.seek(0)
         img = PIL.Image.open(buffer)
 
-        # Prompt
+        # Prompt - Updated for structured treatment response
         prompt = """
-        Analyze this image of a plant leaf. return a JSON object with the following fields:
-        1. plantName: The name of the plant.
+        Analyze this image of a plant leaf. Return a JSON object with the following fields:
+        1. plantName: The name of the plant (e.g., "Tomato", "Potato", "Pepper").
         2. disease: The name of the disease or "Healthy" if no disease is found.
         3. confidence: A percentage string (e.g., "95%") indicating confidence in the diagnosis.
-        4. treatment: A detailed treatment recommendation formatted as a numbered list (e.g., "1. Step one... 2. Step two...").
-        5. health_score: A number from 0 to 100 representing the plant's health (100 is perfectly healthy).
-        6. isUnknown: Boolean, set to true ONLY if the image is clearly NOT a plant.
+        4. health_score: A number from 0 to 100 representing the plant's health (100 is perfectly healthy).
+        5. isUnknown: Boolean, set to true ONLY if the image is clearly NOT a plant.
+        6. precautions: An array of 4-5 precaution strings that should be followed (e.g., ["Remove infected leaves immediately", "Avoid overhead watering"]).
+        7. organic_manures: An array of 3-4 organic treatment recommendations with details (e.g., ["Neem Cake: Apply 100-150g per plant", "Vermicompost: Apply 500g per plant"]).
+        8. inorganic_manures: An array of 2-3 chemical/inorganic treatment recommendations (e.g., ["Mancozeb 75% WP: 2.5g per liter water", "Copper Oxychloride: 3g per liter"]).
         
-        Output ONLY the raw JSON string.
+        If the plant is healthy, provide general care tips in precautions and preventive treatments in organic/inorganic sections.
+        
+        Output ONLY the raw JSON string, no markdown formatting.
         """
         
         # List of models to try in order of preference (Based on actual available models in logs)
@@ -269,6 +273,15 @@ def api_analyze():
             print(f"JSON Decode Error: {je}")
             return jsonify({"success": False, "error": f"Failed to parse AI response: {str(je)}"})
 
+        # Prepare consolidated treatment string for database
+        precautions = result.get('precautions', [])
+        organic = result.get('organic_manures', [])
+        inorganic = result.get('inorganic_manures', [])
+        
+        treatment_summary = "Precautions:\n" + "\n".join(f"- {p}" for p in precautions)
+        treatment_summary += "\n\nOrganic Manures:\n" + "\n".join(f"- {o}" for o in organic)
+        treatment_summary += "\n\nInorganic Manures:\n" + "\n".join(f"- {i}" for i in inorganic)
+
         # Save to database
         user_id = session.get('user_id')
         save_diagnosis(
@@ -276,7 +289,7 @@ def api_analyze():
             plant_name=result.get('plantName', 'Unknown'),
             disease=result.get('disease', 'Unknown'),
             confidence=result.get('confidence', '0%'),
-            treatment=result.get('treatment', ''),
+            treatment=treatment_summary,
             image_path=image_path,
             health_score=result.get('health_score'),
             is_unknown=result.get('isUnknown', False)
